@@ -46,14 +46,14 @@ skills = [ 'javascript' 'python' 'rust' ]
 
 Object keys must start with a letter or an underscore (`_`) and consist of alphanumeric characters or underscores.
 
-For keys starting with a digit or containing spaces/special characters, quoted keys must be used.
+For keys starting with a digit or containing spaces/special characters, or reserved words, quoted keys must be used.
 
 ```
--- bare keys
+-- Bare keys
 app_version = '2.4.0'
 _internal_id = 101
 
--- quoted keys
+-- Quoted keys
 "1st_tier" = true
 "service-node-01" = 'active'
 ```
@@ -63,11 +63,11 @@ _internal_id = 101
 The root `[ ]` is omitted. The root type is determined by the format of the internal content.
 
 ```
--- implicit object root
+-- Implicit object root
 name = 'Project A'
 version = 1.0
 
--- implicit array root
+-- Implicit array root
 ; id=1 name='First'
 ; id=2 name='Second'
 ```
