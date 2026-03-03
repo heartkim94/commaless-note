@@ -318,7 +318,7 @@ body = [
 
 Note allows implementing DSL syntax with simple preprocessing, without building a parser.
 
-**script.txt**
+**script.draft**
 ```
 @bgm 'everyday_theme.mp3' loop
 @bg 'classroom.jpg' fade
