@@ -12,7 +12,7 @@ def parse_note(tokens):
     if tokens[0] != '[': return parse_atom(tokens)
     tokens.pop(0)
 
-    if tokens[0] == ']': return []
+    if tokens[0] == ']': tokens.pop(0); return []
     if tokens[0] == '-':
         tokens.pop(0)
         if tokens[0] == ']': tokens.pop(0); return {}
