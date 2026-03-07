@@ -8,57 +8,61 @@ def tokenize(text):
     return re.findall(r"\[|\]|=|;|\.|-\d+|\d+|-|\"[^\"]*\"|'[^']*'|[^\s\[\]=;\.-]+", text)
 
 
-def cast(val):
-    if val == 'nil': return None
-    if val in ('true', 'false'): return val == 'true'
-
-    return val
-
-
 def parse_note(tokens):
-    token = tokens.pop(0)
+    if tokens[0] != '[': return parse_atom(tokens)
+    tokens.pop(0)
+
+    if tokens[0] == ']': return []
+    if tokens[0] == '-':
+        tokens.pop(0)
+        if tokens[0] == ']': tokens.pop(0); return {}
+    if tokens[0] == ';': return parse_list(tokens)
     
-    if token != '[': return cast(token)
-
-    first = parse_note(tokens)
-
-    if first == ']': return []
-    if first == '-' and tokens[0] == ']': tokens.pop(0); return {}
+    val = parse_note(tokens)
 
     if tokens[0] in ('=', '.'):
-        return parse_object(tokens, first)
+        return parse_object_tail(tokens, val)
     else:
-        return parse_list(tokens, first)
+        return parse_list_tail(tokens, val)
 
 
-def parse_object(tokens, first):
+def parse_object_tail(tokens, atom):
     obj = {}
-    set_key_val(tokens, obj, first)
+    set_key_val(tokens, obj, atom)
 
     while tokens[0] != ']':
-        set_key_val(tokens, obj, tokens.pop(0))
+        set_key_val(tokens, obj, parse_atom(tokens))
     tokens.pop(0)
 
     return obj
 
 
-def parse_list(tokens, first):
-    lst = []
-    append_item(tokens, lst, first)
+def parse_list_tail(tokens, val):
+    lst = [val]
 
     while tokens[0] != ']':
-        append_item(tokens, lst, parse_note(tokens))
+        append_item(tokens, lst)
     tokens.pop(0)
 
     return lst
 
 
-def set_key_val(tokens, obj, token):
-    path = [token]
+def parse_list(tokens):
+    lst = []
+
+    while tokens[0] != ']':
+        append_item(tokens, lst)
+    tokens.pop(0)
+
+    return lst
+
+
+def set_key_val(tokens, obj, atom):
+    path = [atom]
 
     while tokens[0] == '.':
         tokens.pop(0)
-        path.append(tokens.pop(0))
+        path.append(parse_atom(tokens))
     tokens.pop(0)
 
     for key in path[:-1]:
@@ -66,24 +70,33 @@ def set_key_val(tokens, obj, token):
     obj[path[-1]] = parse_note(tokens)
 
 
-def append_item(tokens, lst, token):
-    if token == ';':
+def append_item(tokens, lst):
+    if tokens[0] == ';':
+        tokens.pop(0)
         obj = {}
 
         while tokens[0] not in (';', ']'):
-            curr = tokens.pop(0)
+            val = parse_note(tokens)
 
             if tokens[0] in ('.', '='):
-                set_key_val(tokens, obj, curr)
+                set_key_val(tokens, obj, val)
             else:
                 lst.append(obj)
-                lst.append(curr)
+                lst.append(val)
                 return
             
         lst.append(obj)
 
     else:
-        lst.append(token)
+        lst.append(parse_note(tokens))
+
+
+def parse_atom(tokens):
+    token = tokens.pop(0)
+    if token == 'nil': return None
+    if token in ('true', 'false'): return token == 'true'
+
+    return token
 
 
 if __name__ == '__main__':
