@@ -141,43 +141,59 @@ data.empty = [
 
 ### ⑦ Multi-line Strings
 
-Triple quotes (`'''` or `"""`) are used for multi-line text.
+Multi-line text uses `#[ ]#`, allowing variable-length #s (e.g., `##[ ]##`) to prevent delimiter collision.
 
-The first newline (`\n`) immediately after the opening quotes is ignored.
+The first newline (`\n`) immediately after the opening delimiter is ignored.
 
 All newlines are normalized to `\n` during parsing.
 
 Indentation is preserved.
 
 ```
-server.banner = """
+server.banner = ##[
   ======================================
-  Welcome to Production API Server
+  #[ Welcome to Production API Server ]#
   Status: Online (v2.4.0)
   ======================================
-"""
+]##
 
-database.queries.get_active_users = '''
+database.queries.get_active_users = #[
   SELECT id, name, email
   FROM users
   WHERE status = 'active'
     AND last_login > '2024-01-01'
   ORDER BY created_at DESC;
-'''
+]#
 ```
 
-### ⑧ Comments
+### ⑧ Escape Sequence
 
-`--` is used for single-line and inline comments.
+Standard string literals (`''` or `""`) support the escape sequences: `\n`, `\t`, `\r`, `\b`, `\f`, `\'`, `\"`, `\\`, and `\u{x...}` (e.g., `\u{41}`, `\u{1F600}`).
 
-`---` is used to enclose multi-line comments.
+Inside multi-line text blocks, escape sequences require a hash prefix that matches the length of the block's delimiters (e.g., `\#n` inside `#[ ]#`, or `\##n` inside `##[ ]##`).
 
 ```
----
+example.standard = "Standard text\n\u{1F600}"
+
+example.multiline = ##[
+  Path: C:\new_folder\test
+  Tag: #[USER_NAME]#
+  Done\##u{1F600}
+]##
+```
+
+### ⑨ Comments
+
+Single-line comments use `--`.
+
+Multi-line comments use `--[ --]`, allowing variable-length hyphens (e.g., `---[ ---]`) to prevent delimiter collision.
+
+```
+--[
 # API Server Configuration
 - Environment: Local & Production
 - Updated: 2024-05-20
----
+--]
 
 -- Local development and test server settings (Active)
 server.host = 'localhost'
@@ -185,20 +201,18 @@ server.port = 8080
 server.timeout = 5000  -- Response timeout in ms
 
 -- Production server settings (Inactive)
----
+--[
 server.host = 'api.production-site.com'
 server.port = 443
 server.ssl = true
----
+--]
 ```
 
 ## 3. Data Types
 
 Supports the same data types as JSON.
 
-* **String**: `' '`, `" "`, `''' '''` or `""" """`
-
-  * Supports standard JSON escape sequences (`\n`, `\t`, `\"`, `\\`, `\uXXXX`, etc.).
+* **String**: `' '`, `" "`, `#[ ]#`
 
 * **Number**: `1024`, `3.14`, `-5`, `1.2e-3`
 
