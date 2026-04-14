@@ -22,8 +22,6 @@ This repository serves as a syntax proposal and specification; it does not inclu
 
 * **Compact**: Reduces syntax to decrease file size and AI token usage.
 
-* **Versatile Notation:** Suitable for ASTs, IRs, and DSL syntax.
-
 ## 2. Syntax & Examples
 
 Note uses spaces and newlines as data delimiters instead of commas (`,`).
@@ -301,59 +299,5 @@ To keep the single-line structure, use `\n` instead of multi-line strings (`"""`
 ; id=5 level='debug' msg='Cache cleared'
 ```
 
-### ③ AST Representation
-
-Note can be used to represent an AST.
-
-**add.c**
-```
-int add(int a, int b) { return a+b; }
-```
-
-**ast.note**
-```
-type = 'FunctionDecl'
-name = 'add'
-returns = 'int'
-params = [
-  ; name='a' type='int'
-  ; name='b' type='int'
-]
-body = [
-  ; type='ReturnStmt'
-    expr.type='BinaryOperator'
-    expr.opcode='+'
-    expr.left='a'
-    expr.right='b'
-]
-```
-
-### ④ Intermediate Representation (IR)
-
-Note allows implementing DSL syntax with simple preprocessing, without building a parser.
-
-**script.draft**
-```
-@bgm 'everyday_theme.mp3' loop
-@bg 'classroom.jpg' fade
-
-@char kara happy at left
-kara: "Hi there! Welcome to our school."
-
-@char kara wink
-kara: "I'll be your guide today!"
-```
-
-**script.note**
-```
-; type='bgm' file='everyday_theme.mp3' loop=true
-; type='bg' image='classroom.jpg' effect='fade'
-
-; type='char' name='kara' emotion='happy' position='left'
-; type='dialogue' speaker='kara' text='Hi there! Welcome to our school.'
-
-; type='char' name='kara' emotion='wink'
-; type='dialogue' speaker='kara' text="I'll be your guide today!"
-```
-
 **Acknowledgments:** The documentation structure and examples were refined with the assistance of AI.
+
